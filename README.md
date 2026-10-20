@@ -1,5 +1,8 @@
 # Historia entre voces — versión simple GitHub Pages + Supabase
 
+## Corrección de pgcrypto
+Esta versión utiliza `extensions.crypt` y `extensions.gen_salt`, porque Supabase suele instalar `pgcrypto` en el esquema `extensions`.
+
 ## Ya ejecutaste el primer script SQL
 No hace falta borrar el proyecto ni ejecutar `schema.sql` de nuevo.
 
