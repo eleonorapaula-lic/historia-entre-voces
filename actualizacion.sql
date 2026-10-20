@@ -7,13 +7,13 @@ create table if not exists public.hev_settings (
 alter table public.hev_settings enable row level security;
 revoke all on public.hev_settings from public, anon, authenticated;
 insert into public.hev_settings(singleton,password_hash)
-values(true,crypt('Jonas1907', gen_salt('bf')))
+values(true,extensions.crypt('CAMBIA_ESTA_CLAVE', extensions.gen_salt('bf')))
 on conflict (singleton) do update set password_hash=excluded.password_hash;
 
 create or replace function public.hev_check_teacher(p_password text)
 returns boolean language sql security definer set search_path = '' as $$
  select exists(select 1 from public.hev_settings where singleton=true
- and password_hash=public.crypt(coalesce(p_password,''),password_hash));
+ and password_hash=extensions.crypt(coalesce(p_password,''),password_hash));
 $$;
 
 create or replace function public.hev_simple_create(p_password text,p_title text,p_context text,p_opening text,p_max_turns integer)
