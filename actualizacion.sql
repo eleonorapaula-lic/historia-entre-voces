@@ -7,7 +7,7 @@ create table if not exists public.hev_settings (
 alter table public.hev_settings enable row level security;
 revoke all on public.hev_settings from public, anon, authenticated;
 insert into public.hev_settings(singleton,password_hash)
-values(true,crypt('CAMBIA_ESTA_CLAVE', gen_salt('bf')))
+values(true,crypt('Jonas1907', gen_salt('bf')))
 on conflict (singleton) do update set password_hash=excluded.password_hash;
 
 create or replace function public.hev_check_teacher(p_password text)
