@@ -1,11 +1,18 @@
-# Corrección del texto final
+# Historia entre voces — Últimas 15 palabras
 
-1. Ejecutá `corregir_cierre.sql` en Supabase → SQL Editor. No borra datos.
-2. Reemplazá el `index.html` de GitHub Pages por este archivo.
-3. Conservá el `config.js` que ya tenés configurado.
-4. Recargá la página y volvé a abrir una sala, incluso si ya fue finalizada.
+## Instalación
 
-**Salas de un turno:** el resultado reúne el texto inicial y todas las propuestas con sus autores.
-**Salas de varios turnos:** el relato mantiene el hilo aprobado; al final agrega las propuestas no seleccionadas, identificadas como tales.
+1. Ejecutar `ultimas_15_palabras.sql` en el SQL Editor de Supabase.
+2. Sustituir `index.html` en GitHub Pages por el incluido aquí.
+3. **Conservar el `config.js` que ya tenés configurado** (el incluido es solo una plantilla).
+4. Recargar la página publicada (si es necesario, actualización forzada).
 
-Los estudiantes siguen sin poder ver la producción final.
+## Comportamiento
+
+- La pantalla del participante muestra la etiqueta **ÚLTIMAS 15 PALABRAS** y solo esas palabras del relato acumulado.
+- Las palabras proceden del texto de inicio más todas las propuestas enviadas, ordenadas por envío. Se actualiza cada 6 segundos.
+- El relato completo docente concatena las aportaciones sin incluir nombres de autor.
+- La lista «Autores de esta historia» sigue mostrando nombres por separado.
+- No se borran datos ni salas. El SQL no modifica ni elimina tablas.
+
+**Observación didáctica:** en salas de múltiples turnos, las propuestas enviadas se suman todas al relato aunque solo una sea seleccionada para avanzar de turno. La aprobación sirve para controlar el avance, no para elegir qué textos quedan en la narración.
