@@ -1,35 +1,19 @@
-# Historia entre voces — GitHub Pages + Supabase
+# Historia entre voces — versión simple GitHub Pages + Supabase
 
-Esta versión reemplaza Firebase. **GitHub Pages publica los archivos estáticos** y **Supabase almacena salas e intervenciones**. El proyecto no incluye credenciales: debes configurar las tuyas. No existe un enlace público hasta que publiques el repositorio.
+## Ya ejecutaste el primer script SQL
+No hace falta borrar el proyecto ni ejecutar `schema.sql` de nuevo.
 
-## Puesta en marcha
+1. Abrí `actualizacion.sql`, reemplazá **CAMBIA_ESTA_CLAVE** por tu contraseña docente (entre comillas simples; si tiene `'`, duplicala: `''`).
+2. Pegá y ejecutá el contenido de `actualizacion.sql` en el **SQL Editor** de Supabase. Esto mantiene tus salas e intervenciones, crea funciones para contraseña docente y deshabilita los accesos docentes de la versión anterior.
+3. En Supabase → **Authentication → Providers**, habilitá **Anonymous Sign-Ins**. Aunque parezca una cuenta, sucede automáticamente: los alumnos *solo escriben su nombre*.
+4. En `config.js`, ingresá URL y **publishable/anon key** de tu proyecto Supabase. **Nunca** pegues `service_role` o una clave secreta en un sitio público.
+5. Subí `index.html` y `config.js` a GitHub Pages (Settings → Pages → Deploy from a branch). El SQL y README no tienen que estar en la web.
+6. Abrí el enlace de Pages y pulsá **Soy docente**, ingresá la contraseña y creá la sala. Usá **Copiar enlace** para enviarlo.
+7. Los alumnos abren el enlace, escriben su nombre y su intervención. No ingresan contraseña y no pueden leer el texto completo.
 
-1. Crea un proyecto en https://supabase.com/dashboard.
-2. En **SQL Editor**, ejecuta el archivo `schema.sql` completo. Crea dos tablas privadas y siete funciones RPC. Comprueba los mensajes de error en el editor.
-3. En **Authentication > Providers**, habilita **Anonymous Sign-Ins** para estudiantes. Si hay uso abierto al público, considera protección antiabuso/CAPTCHA desde el panel de Supabase.
-4. En **Authentication > Users**, crea/invita tu cuenta docente con correo y contraseña. Debe ser una cuenta **normal**, no anónima. Activa un método de confirmación de correo si el panel lo requiere. No compartas esa cuenta.
-5. En **Project Settings > API Keys** (la denominación exacta puede variar), copia la **Project URL** y la **publishable key** a `config.js`. **Nunca** pegues la `service_role`, `secret key` ni contraseñas en archivos GitHub.
-6. Sube `index.html`, `config.js` y, si deseas, `README.md` al directorio publicado por GitHub Pages. `schema.sql` puede quedarse en el repositorio, pero no contiene secretos.
-7. En GitHub: **Settings > Pages > Deploy from a branch**, elige tu rama y carpeta raíz; abre la URL publicada.
-8. Haz clic en **Soy docente**, inicia sesión, crea una sala y copia el enlace generado. Comparte el enlace por Moodle/WhatsApp. Los estudiantes ingresan sin registro desde su celular.
-9. Desde tu panel docente, **Actualizar propuestas** para ver los aportes del turno; al aprobar uno, se muestra a los siguientes solo el fragmento final de ese aporte. Cierra o descarga el relato cuando quieras.
-
-## Seguridad y alcance
-
-- Las tablas tienen RLS habilitado y **no permiten SELECT directo a estudiantes**. Solo se accede mediante funciones RPC que comprueban la identidad y devuelven campos específicos.
-- `hev_student_state` devuelve **contexto + fragmento del turno**, nunca el conjunto de aportes. `hev_teacher_state` solo responde a quien creó la sala con una cuenta de Supabase Auth no anónima.
-- `hev_submit` permite **una intervención por cuenta anónima y por turno**. Una persona que borre cookies o abra otro navegador podría obtener otra cuenta anónima; esto no equivale a verificar identidad institucional.
-- El enlace de sala se comporta como invitación: quien lo reciba puede participar. No lo publiques indiscriminadamente.
-- El texto final se mantiene privado para alumnos dentro de la app, aunque **la docente puede compartirlo fuera de ella**. Las contraseñas y autorizaciones se validan en Supabase, no en HTML.
-- No hay refresco automático: usa los botones **Actualizar**. No se elimina el historial de propuestas no aceptadas de la base de datos; solo se muestran en el turno actual del panel.
-- **No probado contra una instancia real de Supabase** en esta sesión: se requiere realizar una prueba de extremo a extremo con dos navegadores (docente y estudiante) antes de usar con el curso.
-
-## Por qué no guardar en un archivo de GitHub Pages
-
-GitHub Pages es alojamiento **estático**: el JavaScript descargado por visitantes no puede actualizar por sí solo un archivo del repositorio. Automatizar escritura vía la API de GitHub exigiría un intermediario seguro para guardar el token, que funcionaría como backend. Supabase elimina esa necesidad.
-
-## Archivos
-
-- `index.html`: aplicación web para docente y estudiantes.
-- `config.js`: datos públicos de tu proyecto Supabase (se deben completar).
-- `schema.sql`: base de datos, reglas de permisos y funciones.
+### Consideraciones
+- La contraseña **no está guardada en el código público**; se verifica en Supabase. Por simplicidad, el navegador docente la mantiene durante esa pestaña (sessionStorage) y la envía al servidor para cada operación. Usá tu equipo personal y cerrá el panel al terminar.
+- Es una contraseña compartida para **todas las salas** del proyecto, no cuentas individuales.
+- Mantuvimos el funcionamiento previo: varias propuestas por turno, docente selecciona cuál incorporar, después continúa el siguiente turno. La página estudiantil tiene botón para actualizar el turno.
+- Para cambiar la contraseña, volvé a ejecutar solo el `INSERT INTO public.hev_settings ... ON CONFLICT ...` de `actualizacion.sql`, con una nueva clave.
+- No se trata de seguridad de alto riesgo, pero no publiques la contraseña ni uses una contraseña reutilizada de otra cuenta.
